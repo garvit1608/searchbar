@@ -6,8 +6,7 @@ class App extends React.Component {
       return (
          <div>
             <h3> Instant Search </h3>
-            <InstantSearch
-            />
+            <InstantSearch />
          </div>
       );
    }
