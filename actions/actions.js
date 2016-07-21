@@ -7,14 +7,16 @@ import {
 
 
 
-export const getSearchResult = (dispatch, q, page) => {
-  console.log('page' + page);
+export const getSearchResult = (dispatch, q, page, incPageCount) => {
+  if(incPageCount) {
+    page = page + 1;
+  }
   $.ajax({
       method: "GET",
       url: "https://api.github.com/search/users?q="+q+"&per_page=5&page="+page,
       dataType: "json",
       success: (data) => {
-      	return dispatch({ type: GET_RESULT, data: data, pageCount: page + 1 });
+      	return dispatch({ type: GET_RESULT, data: data, pageCount: page });
       },
       error: () => {
       	console.log('error');
@@ -22,6 +24,8 @@ export const getSearchResult = (dispatch, q, page) => {
       }
     });
 };
+
+
 
 export default {
 	getSearchResult

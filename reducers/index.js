@@ -6,7 +6,6 @@ import {
 export default {
 
 	getSearchResults: (state = {} , action) => {
-		console.log(action);
 		switch ( action.type ) {
 			case GET_RESULT:
 				var obj = Object.assign({}, state);

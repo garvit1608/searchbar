@@ -11,7 +11,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		getSearchResults: (q, pageCount) => Actions.getSearchResult(dispatch, q, pageCount)
+		getSearchResults: (q, pageCount, incPageCount) => Actions.getSearchResult(dispatch, q, pageCount, incPageCount)
 	}
 }
 

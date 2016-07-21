@@ -19,6 +19,7 @@ class SearchBox extends React.Component {
 		this.doneTypingInterval = TIME_INTERVAl;
 		this.getNextPage = this.getNextPage.bind(this);
 		this.setSearchText = this.setSearchText.bind(this);
+		this.setSearchBoxValue = this.setSearchBoxValue.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -61,9 +62,8 @@ class SearchBox extends React.Component {
 
 	getNextPage() {
 		var searchText = $('#searchTextBox').val();
-		console.log(this.props);
 		if(!_.isEmpty(searchText)) {
-			this.props.getSearchResults(searchText, this.props.pageCount);
+			this.props.getSearchResults(searchText, this.props.pageCount, true);
 		}
 	}
 
@@ -76,11 +76,13 @@ class SearchBox extends React.Component {
 			isLoading: true, 
 			memoizeResults: this.getMemoizedResults(e.target.value)
 		});
+	}
 
+	setSearchBoxValue(value) {
+		$('#searchTextBox').val(value).trigger('change');
 	}
 
 	render () {
-		console.log(this.props.pageCount);
 		return (
 			<div>
 				<div>
@@ -88,7 +90,10 @@ class SearchBox extends React.Component {
 					<button onClick={this.getNextPage} > Next </button>
 					<Loader show={this.state.isLoading} />
 				</div>
-				<SearchResult data={this.state.memoizeResults}  />
+				<SearchResult 
+					data={this.state.memoizeResults}
+					setSearchBoxValue={this.setSearchBoxValue}
+				/>
 			</div>
 		)
 	}
