@@ -6,15 +6,14 @@ import {
 export default {
 
 	getSearchResults: (state = {} , action) => {
-		// console.log(action.data)
+		console.log(action);
 		switch ( action.type ) {
 			case GET_RESULT:
 				var obj = Object.assign({}, state);
 				obj.searchResults = action.data.items;
-				// console.log(action.data.items);
-				return { searchResults: obj.searchResults };
+				return { searchResults: obj.searchResults, pageCount: action.pageCount };
 			case RESET_RESULT:
-				return { searchResults: [] };
+				return { searchResults: [], pageCount: action.pageCount };
 			default: 
 				return state;
 		}

@@ -9,12 +9,13 @@ class InstantSearchContainer extends React.Component {
 	}
 
 	render() {
-		// console.log(this.props.searchResults);
+		console.log(this.props);
 		return (
 			<div>
 				<SearchBox
 					getSearchResults={this.props.getSearchResults}
 					searchResults={this.props.searchResults}
+					pageCount={this.props.pageCount}
 				/>
 				<SearchResult searchResults={this.props.searchResults} />
 			</div>

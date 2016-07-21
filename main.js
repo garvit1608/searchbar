@@ -4,9 +4,11 @@ import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import search from './reducers/index.js';
 import App from './App.jsx';
+import { PAGE_COUNT }from './actions/actionTypes.js';
 
 const initialState = {
-	searchResults: []
+	searchResults: [],
+	pageCount: PAGE_COUNT
 }
 
 // const reducers = combineReducers({

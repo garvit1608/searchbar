@@ -3,8 +3,8 @@ import $ from 'jquery';
 import * as _ from 'underscore';
 import Loader from './Loader.jsx';
 import SearchResult from './SearchResult.jsx';
+import { PAGE_COUNT } from '../actions/actionTypes.js';
 
-const PAGE_COUNT = 1;
 const TIME_INTERVAl = 3000;
 
 class SearchBox extends React.Component {
@@ -13,85 +13,20 @@ class SearchBox extends React.Component {
 		super(props);
 		this.state = {
 			isLoading: false,
-			memoizeResults: [],
-			pageCount: PAGE_COUNT
+			memoizeResults: []
 		}
 		this.typingTimer;
 		this.doneTypingInterval = TIME_INTERVAl;
-		this.setPageCount = this.setPageCount.bind(this);
+		this.getNextPage = this.getNextPage.bind(this);
 		this.setSearchText = this.setSearchText.bind(this);
 	}
 
-	componentDidMount() {
-		//on keyup, start the countdown
-		// input.on('keyup', (e) => {
-		//   clearTimeout(typingTimer);
-		//   typingTimer = setTimeout(this.getSearchResults.bind(this, e.target.value), doneTypingInterval);
-		// });
-
-		//on keydown, clear the countdown 
-		// input.on('keydown', (e) => {
-		// 	if(e.keyCode != 9) { 
-		// 		this.setState({ 
-		// 			isLoading: true, 
-		// 			memoizeResults: this.getMemoizedResults(e.target.value)
-		// 		});
-		//   clearTimeout(typingTimer);
-		// 	}
-		// });
-
-		// this.attachAutoComplete();
-	}
-
-	// attachAutoComplete() {
-	// 	  $( function() {
- //    var availableTags = [
- //      "ActionScript",
- //      "AppleScript",
- //      "Asp",
- //      "BASIC",
- //      "C",
- //      "C++",
- //      "Clojure",
- //      "COBOL",
- //      "ColdFusion",
- //      "Erlang",
- //      "Fortran",
- //      "Groovy",
- //      "Haskell",
- //      "Java",
- //      "JavaScript",
- //      "Lisp",
- //      "Perl",
- //      "PHP",
- //      "Python",
- //      "Ruby",
- //      "Scala",
- //      "Scheme"
- //    ];
- //    $( "#tags" ).autocomplete({
- //      source: availableTags
- //    });
- //  } );
-	// }
-
-	// setTimer(e) {
-	// 	var timer = e.target.keyup(_.debounce(doSomething , 500));
-	// }
 	componentWillReceiveProps(nextProps) {
 		if(_.isEmpty(nextProps.searchResults)) {
 			this.setState({
-				memoizeResults: [],
-				pageCount: PAGE_COUNT
+				memoizeResults: []
 			});
 		}
-	}
-
-	componentDidUpdate(prevState) {
-		// if(nextState.pageCount === this.state.pageCount + 1) {
-		// 	var searchText = $('#searchTextBox').val();
-		// 	this.props.getSearchResults(searchText, nextState.pageCount);
-		// }
 	}
 
 	getMemoizedResults(q) {
@@ -120,22 +55,22 @@ class SearchBox extends React.Component {
 		else {
 			this.pushQuerytoLocalStorage(q);
 		}
-		this.props.getSearchResults(q, this.state.pageCount);
+		this.props.getSearchResults(q, this.props.pageCount);
 		this.setState({ isLoading: false });
 	}
 
-	setPageCount() {
-		console.log(this.state.pageCount);
-		this.setState({
-			pageCount: this.state.pageCount + 1
-		});
+	getNextPage() {
+		var searchText = $('#searchTextBox').val();
+		console.log(this.props);
+		if(!_.isEmpty(searchText)) {
+			this.props.getSearchResults(searchText, this.props.pageCount);
+		}
 	}
 
 	setSearchText(e) {
 		var input = e.target;
 		clearTimeout(this.typingTimer);
-		this.typingTimer = setTimeout(this.getSearchResults.bind(this, e.target.value), 
-									this.doneTypingInterval);
+		this.typingTimer = setTimeout(this.getSearchResults.bind(this, e.target.value, this.props.pageCount), this.doneTypingInterval);
 
 		this.setState({ 
 			isLoading: true, 
@@ -145,14 +80,15 @@ class SearchBox extends React.Component {
 	}
 
 	render () {
+		console.log(this.props.pageCount);
 		return (
 			<div>
 				<div>
-					<input type="text" placeholder="enter search text" onChange={this.setSearchText} style={{float: 'left'}}/>
-					<button onClick={this.setPageCount} > Next </button>
+					<input type="text" placeholder="enter search text" onChange={this.setSearchText} style={{float: 'left'}} id="searchTextBox" />
+					<button onClick={this.getNextPage} > Next </button>
 					<Loader show={this.state.isLoading} />
 				</div>
-				<SearchResult data={this.state.memoizeResults} />
+				<SearchResult data={this.state.memoizeResults}  />
 			</div>
 		)
 	}
