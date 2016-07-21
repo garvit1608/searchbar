@@ -6,16 +6,15 @@ import search from './reducers/index.js';
 import App from './App.jsx';
 
 const initialState = {
-	searchResults: [],
-	memoizedResults: []
+	searchResults: []
 }
 
-const reducers = combineReducers({
-	searchResults: search.getSearchResults,
-	memoizedResults: search.getMemoizedResults
-});
+// const reducers = combineReducers({
+// 	searchResults: search.getSearchResults,
+// 	memoizedResults: search.getMemoizedResults
+// });
 
-let store = createStore(reducers,	initialState);
+let store = createStore(search.getSearchResults,	initialState);
 
 render(
   <Provider store={store}>

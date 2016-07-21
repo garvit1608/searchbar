@@ -5,25 +5,19 @@ import {
 
 export default {
 
-	getSearchResults: (state = [] , action) => {
-		console.log(action.data)
+	getSearchResults: (state = {} , action) => {
+		// console.log(action.data)
 		switch ( action.type ) {
 			case GET_RESULT:
-				console.log(action.data.items);
-				return 	action.data.items;
+				var obj = Object.assign({}, state);
+				obj.searchResults = action.data.items;
+				// console.log(action.data.items);
+				return { searchResults: obj.searchResults };
 			case RESET_RESULT:
-				return [];
+				return { searchResults: [] };
 			default: 
 				return state;
 		}
-	},
-
-	getMemoizedResults: (state = null, action) => {
-		switch( action.type ) {
-			case "GET_RESUL":
-				return action.payload;
-			default:
-				return state;
-		}
 	}
+
 };
