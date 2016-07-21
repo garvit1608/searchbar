@@ -8,9 +8,9 @@ class SearchBox extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isLoading: false
+			isLoading: false,
+			memoizeResults: []
 		}
-		// this.getSearchResults = this.getSearchResults.bind(this);
 	}
 
 	componentDidMount() {
@@ -26,7 +26,11 @@ class SearchBox extends React.Component {
 
 		//on keydown, clear the countdown 
 		input.on('keydown', (e) => {
-			this.setState({ isLoading: true });
+			// console.log(this.getMemoizedResults());
+			this.setState({ 
+				isLoading: true, 
+				memoizeResults: this.getMemoizedResults(e.target.value)
+			});
 		  clearTimeout(typingTimer);
 		});
 
@@ -69,22 +73,28 @@ class SearchBox extends React.Component {
 	// 	var timer = e.target.keyup(_.debounce(doSomething , 500));
 	// }
 
+	getMemoizedResults(q) {
+		var pastSearches = this.getPastSearches();
+		// console.log( _.filter(pastSearches, (e) => e.match(q)));
+		return pastSearches ? _.filter(pastSearches, (e) => e.match(q)) : [];
+	}
+
 	getPastSearches() {
 		return JSON.parse(localStorage.getItem('pastSearches'));
 	}
 
 	pushQuerytoLocalStorage(q) {
 		var array = this.getPastSearches() || [];
-		console.log(this.getPastSearches);
 		array.push(q);
 		localStorage.setItem('pastSearches', JSON.stringify(array));
 	}
 
 	getSearchResults(q) {
+		this.props.getSearchResults(q);
+		// console.log(this.props.searchResults);
 		var pastSearches = this.getPastSearches();
 		if(pastSearches) {
-			var memoizeResults = _.filter(pastSearches, (e) => e.match(q));
-			console.log(memoizeResults);
+			var memoizeResults = this.getMemoizedResults(q);
 			if(_.isEmpty(memoizeResults)) {
 				this.pushQuerytoLocalStorage(q);
 			}
@@ -92,7 +102,6 @@ class SearchBox extends React.Component {
 		else {
 			this.pushQuerytoLocalStorage(q);
 		}
-		this.props.getSearchResults(q);
 		this.setState({ isLoading: false });
 	}
 
@@ -101,7 +110,6 @@ class SearchBox extends React.Component {
 			<div>
 				<input type="text" id="searchTextBox" />
 				<Loader show={this.state.isLoading} />
-				<div id="memoizedResults" />
 			</div>
 		)
 	}
