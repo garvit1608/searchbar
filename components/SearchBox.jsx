@@ -2,6 +2,10 @@ import React from 'react';
 import $ from 'jquery';
 import * as _ from 'underscore';
 import Loader from './Loader.jsx';
+import SearchResult from './SearchResult.jsx';
+
+const PAGE_COUNT = 1;
+const TIME_INTERVAl = 3000;
 
 class SearchBox extends React.Component {
 
@@ -9,30 +13,32 @@ class SearchBox extends React.Component {
 		super(props);
 		this.state = {
 			isLoading: false,
-			memoizeResults: []
+			memoizeResults: [],
+			pageCount: PAGE_COUNT
 		}
+		this.typingTimer;
+		this.doneTypingInterval = TIME_INTERVAl;
+		this.setPageCount = this.setPageCount.bind(this);
+		this.setSearchText = this.setSearchText.bind(this);
 	}
 
 	componentDidMount() {
-		var typingTimer;
-		var doneTypingInterval = 3000;
-		var input = $('#searchTextBox');
-
 		//on keyup, start the countdown
-		input.on('keyup', (e) => {
-		  clearTimeout(typingTimer);
-		  typingTimer = setTimeout(this.getSearchResults.bind(this, e.target.value), doneTypingInterval);
-		});
+		// input.on('keyup', (e) => {
+		//   clearTimeout(typingTimer);
+		//   typingTimer = setTimeout(this.getSearchResults.bind(this, e.target.value), doneTypingInterval);
+		// });
 
 		//on keydown, clear the countdown 
-		input.on('keydown', (e) => {
-			// console.log(this.getMemoizedResults());
-			this.setState({ 
-				isLoading: true, 
-				memoizeResults: this.getMemoizedResults(e.target.value)
-			});
-		  clearTimeout(typingTimer);
-		});
+		// input.on('keydown', (e) => {
+		// 	if(e.keyCode != 9) { 
+		// 		this.setState({ 
+		// 			isLoading: true, 
+		// 			memoizeResults: this.getMemoizedResults(e.target.value)
+		// 		});
+		//   clearTimeout(typingTimer);
+		// 	}
+		// });
 
 		// this.attachAutoComplete();
 	}
@@ -72,10 +78,24 @@ class SearchBox extends React.Component {
 	// setTimer(e) {
 	// 	var timer = e.target.keyup(_.debounce(doSomething , 500));
 	// }
+	componentWillReceiveProps(nextProps) {
+		if(_.isEmpty(nextProps.searchResults)) {
+			this.setState({
+				memoizeResults: [],
+				pageCount: PAGE_COUNT
+			});
+		}
+	}
+
+	componentDidUpdate(prevState) {
+		// if(nextState.pageCount === this.state.pageCount + 1) {
+		// 	var searchText = $('#searchTextBox').val();
+		// 	this.props.getSearchResults(searchText, nextState.pageCount);
+		// }
+	}
 
 	getMemoizedResults(q) {
 		var pastSearches = this.getPastSearches();
-		// console.log( _.filter(pastSearches, (e) => e.match(q)));
 		return pastSearches ? _.filter(pastSearches, (e) => e.match(q)) : [];
 	}
 
@@ -90,8 +110,6 @@ class SearchBox extends React.Component {
 	}
 
 	getSearchResults(q) {
-		this.props.getSearchResults(q);
-		// console.log(this.props.searchResults);
 		var pastSearches = this.getPastSearches();
 		if(pastSearches) {
 			var memoizeResults = this.getMemoizedResults(q);
@@ -102,14 +120,39 @@ class SearchBox extends React.Component {
 		else {
 			this.pushQuerytoLocalStorage(q);
 		}
+		this.props.getSearchResults(q, this.state.pageCount);
 		this.setState({ isLoading: false });
+	}
+
+	setPageCount() {
+		console.log(this.state.pageCount);
+		this.setState({
+			pageCount: this.state.pageCount + 1
+		});
+	}
+
+	setSearchText(e) {
+		var input = e.target;
+		clearTimeout(this.typingTimer);
+		this.typingTimer = setTimeout(this.getSearchResults.bind(this, e.target.value), 
+									this.doneTypingInterval);
+
+		this.setState({ 
+			isLoading: true, 
+			memoizeResults: this.getMemoizedResults(e.target.value)
+		});
+
 	}
 
 	render () {
 		return (
 			<div>
-				<input type="text" id="searchTextBox" />
-				<Loader show={this.state.isLoading} />
+				<div>
+					<input type="text" placeholder="enter search text" onChange={this.setSearchText} style={{float: 'left'}}/>
+					<button onClick={this.setPageCount} > Next </button>
+					<Loader show={this.state.isLoading} />
+				</div>
+				<SearchResult data={this.state.memoizeResults} />
 			</div>
 		)
 	}
