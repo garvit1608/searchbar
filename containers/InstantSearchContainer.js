@@ -4,13 +4,14 @@ import InstantSearchContainer from '../components/InstantSearchContainer.jsx';
 
 const mapStateToProps = state => {
 	return {
-		searchResults: state.searchResults
+		searchResults: state.searchResults,
+		pageCount: state.pageCount
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
-		getSearchResults: (q) => Actions.getSearchResult(dispatch, q)
+		getSearchResults: (q, pageCount) => Actions.getSearchResult(dispatch, q, pageCount)
 	}
 }
 
