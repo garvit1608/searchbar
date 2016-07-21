@@ -9,7 +9,9 @@ class Loader extends React.Component {
 	render() {
 		return (
 			<div>
-				<span style={{display: this.props.show ? 'initial' : 'none'}}>Loading</span>
+				<span style={{display: this.props.show ? 'initial' : 'none'}}>
+					<img src={'../img/default.gif'} style={{height: 70, width: 70}}/>
+				</span>
 			</div>
 		)
 	}
