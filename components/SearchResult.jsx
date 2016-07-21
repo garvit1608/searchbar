@@ -24,7 +24,8 @@ class SearchResult extends React.Component {
 			<div>
 				{
 					this.data.map( (row) => {
-						return <this.rowComponent data={row} />
+						return <this.rowComponent data={row} setSearchBoxValue={this.props.setSearchBoxValue}
+						/>
 					})
 				}
 			</div>
